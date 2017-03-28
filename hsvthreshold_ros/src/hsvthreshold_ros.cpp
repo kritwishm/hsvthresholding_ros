@@ -21,7 +21,7 @@ class HSVThreshold
    HSVThreshold()
      : it_(nh_)
    {
-       image_sub_ = it_.subscribe("/camera/image_raw", 1, &HSVThreshold::imageCb, this);
+       image_sub_ = it_.subscribe("/kraken/front_camera", 1, &HSVThreshold::imageCb, this);
        image_pub_ = it_.advertise("/image_converter/output_video", 1);
 
        cv::namedWindow(OPENCV_WINDOW);
@@ -40,9 +40,10 @@ class HSVThreshold
      cv_ptr = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::BGR8);
      cv::GaussianBlur( cv_ptr->image, cv_ptr->image, cv::Size(3,3), 0, 0);
      cv::cvtColor(cv_ptr->image,HSVImage,CV_BGR2HSV);
-     cv::inRange(HSVImage,Scalar(80,90,70),Scalar(110,125,200),ThreshImage);
+     //for red
+     cv::inRange(HSVImage,Scalar(0,40,20),Scalar(10,255,255),ThreshImage);
 
-     cv::imshow(OPENCV_WINDOW, cv_ptr->image);
+     cv::imshow(OPENCV_WINDOW, ThreshImage);
      cv::waitKey(3);
 
      image_pub_.publish(cv_ptr->toImageMsg());

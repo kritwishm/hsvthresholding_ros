@@ -1,0 +1,8 @@
+prefix=/usr/local
+
+Name: hsvthreshold_ros
+Description: Description of hsvthreshold_ros
+Version: 0.0.0
+Cflags: 
+Libs: -L/usr/local/lib 
+Requires: 

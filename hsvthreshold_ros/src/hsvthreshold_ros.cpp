@@ -11,6 +11,11 @@ using namespace cv;
 
 static const std::string OPENCV_WINDOW = "Image window";
 
+int low_h=30, low_s=30, low_v=30;
+int high_h=100, high_s=100, high_v=100;
+
+void threshold();
+
 class HSVThreshold
 {
   ros::NodeHandle nh_;
@@ -42,8 +47,8 @@ class HSVThreshold
      cv_ptr = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::BGR8);
      cv::GaussianBlur( cv_ptr->image, cv_ptr->image, cv::Size(3,3), 0, 0);
      cv::cvtColor(cv_ptr->image,HSVImage,CV_BGR2HSV);
-     //for red
-     cv::inRange(HSVImage,Scalar(0,40,20),Scalar(10,255,255),ThreshImage);
+     threshold();
+     cv::inRange(HSVImage,Scalar(low_h,low_s,low_v),Scalar(high_h,high_s,high_v),ThreshImage);
      cv::fastNlMeansDenoising(ThreshImage, denimg, 30.0, 7, 21);
      cv::imshow(OPENCV_WINDOW, denimg);
      cv::waitKey(3);
@@ -51,6 +56,18 @@ class HSVThreshold
      image_pub_.publish(cv_ptr->toImageMsg());
    }
 };
+
+void threshold()
+{
+  namedWindow(OPENCV_WINDOW, CV_WINDOW_AUTOSIZE);
+  createTrackbar("Low H",OPENCV_WINDOW, &low_h, 180);
+  createTrackbar("High H",OPENCV_WINDOW, &high_h, 180);
+  createTrackbar("Low S",OPENCV_WINDOW, &low_s, 255);
+  createTrackbar("High S",OPENCV_WINDOW, &high_s, 255);
+  createTrackbar("Low V",OPENCV_WINDOW, &low_v, 255);
+  createTrackbar("High V",OPENCV_WINDOW, &high_v, 255);
+
+}
 
 int main(int argc, char** argv)
 {
